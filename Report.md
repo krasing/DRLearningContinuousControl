@@ -8,9 +8,7 @@ This report describes an implementation of the **Continuous Control** project fr
 
 ## Learning Algorithm
 
-The task was solved using the Actor-Critic method. The agent is composed of an Actor and a Critic networks. The Actor network is used to calculate the action based on the current state. The Critic network is used to predict the Q-value, i.e. the value of the current (state, action). The negative of the Q-value is used as a loss measure for training the Actor network. To measure the loss of the Critic network, a "true" or target Q-value is calculated using the Bellman equation, which in pseudocode looks like 
-
-        Q_targets = rewards + gamma * critic_target(next_states, actions_next)
+The task was solved using the Actor-Critic method Deep Deterministic Policy Gradients (DDPG, [1]). The agent is composed of an Actor and a Critic networks. The Actor network is used to calculate the action based on the current state. The Critic network is used to predict the Q-value, i.e. the value of the current (state, action). The negative of the Q-value is used as a loss measure for training the Actor network. To measure the loss of the Critic network, a "true" or target Q-value is calculated using the Bellman equation, which in pseudocode looks like `Q_targets = rewards + gamma * critic_target(next_states, actions_next)`
 
 ### The Actor network
 
@@ -26,14 +24,14 @@ The input to the first layer was the state (33 units) and the output had 400 act
 
 ### Training
 
-The training algorithm is implemented in the function `ddpg()`. The interaction with the envoronment is similar to the one from [the previons project](https://github.com/krasing/DRLearningNavigation/blob/master/Report.ipynb). The differences are in the agent as defined in `class Agents()`:
+The training algorithm is implemented in the function `ddpg()`. The interaction with the envoronment is similar to the one from [the previons project](https://github.com/krasing/DRLearningNavigation/blob/master/Report.ipynb). The differences are in the agent as defined in `class Agents()` based on the algorithm in [2]:
  - at each step the experience from all agents is collected into the buffer memory. Then a sample from the memory is taken and the learning method `self.learn(experiences, GAMMA)` is called
  - the action function `act()` infolves calculation of the action for all agents. The local Actor network `actor_local(state)` is called in a loop. Additional noise of class `OUNoise()` is added to explore the action space.
 
 ### Learning
 
 Learning is performed by the `learn()` method of the `Agent()` class.
-The loss function and the gradient propagations worth further consideration. Explore how this implementation in code corresponds to *Algorithm 1* in Lillicrap T.P., Hunt J.J., Pritzel A., et.al., Continuous control with deep reinforcement learning, arXiv:1509.02971v5, https://arxiv.org/abs/1509.02971
+The loss function and the gradient propagations worth further consideration. Explore how this implementation in code corresponds to *Algorithm 1* in [1]. (More explanations to be added here!)
 
 in `_init__()`:
 ``` python
@@ -94,4 +92,12 @@ The agent's performance could be further improved by using standard techniques f
  - add dropout layers or other forms of regularization in the model;
  - try more layers or more activations per layer
 
-In addition completely different deep reinforced learning algorithms applicable for continuous control tasks can be explored (e.g. see [arXiv:1509.02971](https://arxiv.org/abs/1604.06778): Benchmarking Deep Reinforcement Learning for Continuous Control by Yan Duan, Xi Chen, Rein Houthooft, John Schulman, Pieter Abbeel)
+In addition completely different deep reinforced learning algorithms applicable for continuous control tasks can be explored (e.g. see [3])
+
+## References
+
+1. Lillicrap T.P., Hunt J.J., Pritzel A., et.al., Continuous control with deep reinforcement learning, arXiv:1509.02971v5, https://arxiv.org/abs/1509.02971
+
+2. Implementations of the **Deep Deterministic Policy Gradients**: https://github.com/udacity/deep-reinforcement-learning/tree/master/ddpg-pendulum): Use OpenAI Gym's Pendulum environment.
+
+3. Yan Duan, Xi Chen, Houthooft R., Schulman J., Abbeel P., Benchmarking Deep Reinforcement Learning for Continuous Control, [arXiv:1509.02971](https://arxiv.org/abs/1604.06778).
